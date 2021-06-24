@@ -4,7 +4,9 @@ using JokesWebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace JokesWebApp.Controllers
@@ -54,10 +56,13 @@ namespace JokesWebApp.Controllers
                 return NotFound();
             }
 
-            return View(joke);
+            JokeDetailsViewModel detailsVM = new JokeDetailsViewModel { JokeQuestion = joke.JokeQuestion, JokeAnswer = joke.JokeAnswer, ID = joke.ID };
+
+            return View(detailsVM);
                                                     
         }
 
+        static string jokeID;
 
         // GET: Jokes/Create
         [Authorize]
@@ -74,15 +79,19 @@ namespace JokesWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID, JokeQuestion, JokeAnswer")] Joke joke)
         {
-            
+            jokeID = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             if (ModelState.IsValid)
             {
+                joke.UserId = jokeID;
                 _context.Add(joke);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(new JokeCreateViewModel {JokeQuestion = joke.JokeQuestion, JokeAnswer = joke.JokeAnswer, ID = joke.ID});
+            JokeCreateViewModel createVM = new JokeCreateViewModel { JokeQuestion = joke.JokeQuestion, JokeAnswer = joke.JokeAnswer, ID = joke.ID, UserID = joke.UserId};
+
+            return View(createVM);
         }
 
 
@@ -90,19 +99,34 @@ namespace JokesWebApp.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            JokeEditViewModel editVM = new JokeEditViewModel();
+
+            if (jokeID == User.FindFirstValue(ClaimTypes.NameIdentifier))
             {
-                return NotFound();
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var joke = await _context.Joke.FindAsync(id);
+                if (joke == null)
+                {
+                    return NotFound();
+                }
+
+                editVM.JokeQuestion = joke.JokeQuestion;
+                editVM.JokeAnswer = joke.JokeAnswer;
+                editVM.ID = joke.ID;
+
+                return View(editVM);
+            }
+            else
+            {
+                return View("JokeError");
             }
 
-            var joke = await _context.Joke.FindAsync(id);
-            if (joke == null)
-            {
-                return NotFound();
-            }
 
 
-            return View(new JokeEditViewModel { JokeQuestion = joke.JokeQuestion, JokeAnswer = joke.JokeAnswer, ID = joke.ID });
         }
 
         // POST: Jokes/Edit/5

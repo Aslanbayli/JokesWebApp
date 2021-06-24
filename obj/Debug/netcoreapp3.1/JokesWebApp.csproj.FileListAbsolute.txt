@@ -168,3 +168,4 @@ C:\Users\ASUS\Desktop\c#\JokesWebApp\obj\Debug\netcoreapp3.1\Razor\Views\Jokes\D
 C:\Users\ASUS\Desktop\c#\JokesWebApp\obj\Debug\netcoreapp3.1\Razor\Views\Jokes\Edit.cshtml.g.cs
 C:\Users\ASUS\Desktop\c#\JokesWebApp\obj\Debug\netcoreapp3.1\Razor\Views\Jokes\Index.cshtml.g.cs
 C:\Users\ASUS\Desktop\c#\JokesWebApp\obj\Debug\netcoreapp3.1\Razor\Views\Jokes\ShowSearchForm.cshtml.g.cs
+C:\Users\ASUS\Desktop\c#\JokesWebApp\obj\Debug\netcoreapp3.1\Razor\Views\Jokes\JokeError.cshtml.g.cs
