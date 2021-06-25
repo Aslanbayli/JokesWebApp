@@ -137,7 +137,7 @@ namespace JokesWebApp.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID, JokeQuestion, JokeAnswer")] Joke joke)
+        public async Task<IActionResult> Edit(int id, [Bind("ID, JokeQuestion, JokeAnswer")] Joke joke, JokeEditViewModel editVM)
         {
             if (id != joke.ID)
             {
@@ -148,6 +148,7 @@ namespace JokesWebApp.Controllers
             {
                 try
                 {
+                    joke.UserId = editVM.UserID;
                     _context.Update(joke);
                     await _context.SaveChangesAsync();
                 }
