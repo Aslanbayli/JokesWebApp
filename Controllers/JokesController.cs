@@ -62,7 +62,7 @@ namespace JokesWebApp.Controllers
                                                     
         }
 
-        static string jokeID;
+        //static string jokeID;
 
         // GET: Jokes/Create
         [Authorize]
@@ -79,11 +79,11 @@ namespace JokesWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID, JokeQuestion, JokeAnswer")] Joke joke)
         {
-            jokeID = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //jokeID = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (ModelState.IsValid)
             {
-                joke.UserId = jokeID;
+                joke.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 _context.Add(joke);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -100,15 +100,16 @@ namespace JokesWebApp.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             JokeEditViewModel editVM = new JokeEditViewModel();
+            
+            var joke = await _context.Joke.FindAsync(id);
 
-            if (jokeID == User.FindFirstValue(ClaimTypes.NameIdentifier))
+            if (joke.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
             {
                 if (id == null)
                 {
                     return NotFound();
                 }
 
-                var joke = await _context.Joke.FindAsync(id);
                 if (joke == null)
                 {
                     return NotFound();
@@ -117,6 +118,7 @@ namespace JokesWebApp.Controllers
                 editVM.JokeQuestion = joke.JokeQuestion;
                 editVM.JokeAnswer = joke.JokeAnswer;
                 editVM.ID = joke.ID;
+                editVM.UserID = joke.UserId;
 
                 return View(editVM);
             }
@@ -137,7 +139,6 @@ namespace JokesWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ID, JokeQuestion, JokeAnswer")] Joke joke)
         {
-
             if (id != joke.ID)
             {
                 return NotFound();
