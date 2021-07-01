@@ -51,18 +51,21 @@ namespace JokesWebApp.Controllers
 
             var joke = await _context.Joke
                 .FirstOrDefaultAsync(m => m.ID == id);
+
             if (joke == null)
             {
                 return NotFound();
             }
 
-            JokeDetailsViewModel detailsVM = new JokeDetailsViewModel { JokeQuestion = joke.JokeQuestion, JokeAnswer = joke.JokeAnswer, ID = joke.ID };
+            JokeDetailsViewModel detailsVM = new JokeDetailsViewModel { 
+                JokeQuestion = joke.JokeQuestion, 
+                JokeAnswer = joke.JokeAnswer, 
+                ID = joke.ID };
 
             return View(detailsVM);
                                                     
         }
 
-        //static string jokeID;
 
         // GET: Jokes/Create
         [Authorize]
@@ -79,8 +82,7 @@ namespace JokesWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID, JokeQuestion, JokeAnswer")] Joke joke)
         {
-            //jokeID = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
+ 
             if (ModelState.IsValid)
             {
                 joke.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -126,8 +128,6 @@ namespace JokesWebApp.Controllers
             {
                 return View("JokeError");
             }
-
-
 
         }
 
