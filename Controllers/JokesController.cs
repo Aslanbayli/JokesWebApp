@@ -37,7 +37,8 @@ namespace JokesWebApp.Controllers
         // POST:  Jokes/ShowSearchResults
         public async Task<IActionResult> ShowSearchResults(string SearchPhrase)
         {
-            return View("Index", await _context.Joke.Where(j => j.JokeQuestion.Contains(SearchPhrase)).ToListAsync());
+            return View("Index", await _context.Joke
+                .Where(j => j.JokeQuestion.Contains(SearchPhrase)).ToListAsync());
         }
 
 
@@ -85,13 +86,17 @@ namespace JokesWebApp.Controllers
  
             if (ModelState.IsValid)
             {
-                joke.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 _context.Add(joke);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            JokeCreateViewModel createVM = new JokeCreateViewModel { JokeQuestion = joke.JokeQuestion, JokeAnswer = joke.JokeAnswer, ID = joke.ID, UserID = joke.UserId};
+            JokeCreateViewModel createVM = new JokeCreateViewModel { 
+                JokeQuestion = joke.JokeQuestion, 
+                JokeAnswer = joke.JokeAnswer, 
+                ID = joke.ID, 
+                UserID = joke.UserId};
+
 
             return View(createVM);
         }
@@ -105,8 +110,7 @@ namespace JokesWebApp.Controllers
             
             var joke = await _context.Joke.FindAsync(id);
 
-            if (joke.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
-            {
+  
                 if (id == null)
                 {
                     return NotFound();
@@ -123,11 +127,7 @@ namespace JokesWebApp.Controllers
                 editVM.UserID = joke.UserId;
 
                 return View(editVM);
-            }
-            else
-            {
-                return View("JokeError");
-            }
+
 
         }
 
@@ -148,7 +148,6 @@ namespace JokesWebApp.Controllers
             {
                 try
                 {
-                    joke.UserId = editVM.UserID;
                     _context.Update(joke);
                     await _context.SaveChangesAsync();
                 }
