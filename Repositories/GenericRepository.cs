@@ -1,18 +1,15 @@
 ﻿using JokesWebApp.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace JokesWebApp.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        private ApplicationDbContext _context = null;
-        private DbSet<T> table = null;
+        public ApplicationDbContext _context;
+        public DbSet<T> table;
 
-        // Constructors
         public GenericRepository()
         {
             this._context = new ApplicationDbContext();

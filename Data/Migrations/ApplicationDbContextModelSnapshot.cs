@@ -107,24 +107,6 @@ namespace JokesWebApp.Data.Migrations
                     b.ToTable("Joke");
                 });
 
-            modelBuilder.Entity("JokesWebApp.ViewModels.JokeDetailsViewModel", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("JokeAnswer")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("JokeQuestion")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("JokeDetailsViewModel");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")

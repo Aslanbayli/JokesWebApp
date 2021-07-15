@@ -1,32 +1,27 @@
-﻿using JokesWebApp.Data;
-using JokesWebApp.Models;
+﻿using JokesWebApp.Models;
+using JokesWebApp.Repositories;
 using JokesWebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace JokesWebApp.Controllers
 {
     public class JokesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IJokeRepository joke_repository;
 
-        public JokesController(ApplicationDbContext context)
+        public JokesController(IJokeRepository repository)
         {
-            _context = context;
+            this.joke_repository = repository;
         }
 
 
         // GET: Jokes
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Joke.ToListAsync());
+            var joke = joke_repository.GetAll();
+            return View(joke);
         }
-
 
         // GET:  Jokes/ShowSearchForm
         public IActionResult ShowSearchForm()
@@ -35,36 +30,29 @@ namespace JokesWebApp.Controllers
         }
 
         // POST:  Jokes/ShowSearchResults
-        public async Task<IActionResult> ShowSearchResults(string SearchPhrase)
+        public IActionResult ShowSearchResults(string SearchPhrase)
         {
-            return View("Index", await _context.Joke
-                .Where(j => j.JokeQuestion.Contains(SearchPhrase)).ToListAsync());
+            return View("Index", joke_repository.ShowSearchFrom(SearchPhrase));
         }
 
 
         // GET: Jokes/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var joke = await _context.Joke
-                .FirstOrDefaultAsync(m => m.ID == id);
+            Joke joke = joke_repository.GetById(id);
 
             if (joke == null)
             {
                 return NotFound();
             }
 
-            JokeDetailsViewModel detailsVM = new JokeDetailsViewModel { 
-                JokeQuestion = joke.JokeQuestion, 
-                JokeAnswer = joke.JokeAnswer, 
-                ID = joke.ID };
+            return View(joke);
 
-            return View(detailsVM);
-                                                    
         }
 
 
@@ -81,53 +69,47 @@ namespace JokesWebApp.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID, JokeQuestion, JokeAnswer")] Joke joke)
+        public IActionResult Create([Bind("ID, JokeQuestion, JokeAnswer")] Joke joke)
         {
- 
+
             if (ModelState.IsValid)
             {
-                _context.Add(joke);
-                await _context.SaveChangesAsync();
+                joke_repository.Insert(joke);
+                joke_repository.Save();
                 return RedirectToAction(nameof(Index));
             }
 
-            JokeCreateViewModel createVM = new JokeCreateViewModel { 
-                JokeQuestion = joke.JokeQuestion, 
-                JokeAnswer = joke.JokeAnswer, 
-                ID = joke.ID, 
-                UserID = joke.UserId};
+            JokeCreateViewModel createVM = new JokeCreateViewModel
+            {
+                JokeQuestion = joke.JokeQuestion,
+                JokeAnswer = joke.JokeAnswer,
+                ID = joke.ID,
+                UserID = joke.UserId
+            };
 
 
-            return View(createVM);
+            return View(joke);
         }
 
 
         // GET: Jokes/Edit/5
         [Authorize]
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int? id)
         {
-            JokeEditViewModel editVM = new JokeEditViewModel();
-            
-            var joke = await _context.Joke.FindAsync(id);
 
-  
-                if (id == null)
-                {
-                    return NotFound();
-                }
+            Joke joke = joke_repository.GetById(id);
 
-                if (joke == null)
-                {
-                    return NotFound();
-                }
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-                editVM.JokeQuestion = joke.JokeQuestion;
-                editVM.JokeAnswer = joke.JokeAnswer;
-                editVM.ID = joke.ID;
-                editVM.UserID = joke.UserId;
+            if (joke == null)
+            {
+                return NotFound();
+            }
 
-                return View(editVM);
-
+            return View(joke);
 
         }
 
@@ -137,7 +119,7 @@ namespace JokesWebApp.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID, JokeQuestion, JokeAnswer")] Joke joke, JokeEditViewModel editVM)
+        public IActionResult Edit(int id, [Bind("ID, JokeQuestion, JokeAnswer")] Joke joke)
         {
             if (id != joke.ID)
             {
@@ -146,40 +128,26 @@ namespace JokesWebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(joke);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!JokeExists(joke.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                joke_repository.Update(joke);
+                joke_repository.Save();
                 return RedirectToAction(nameof(Index));
             }
-            
+
             return View(joke);
         }
 
 
         // GET: Jokes/Delete/5
         [Authorize]
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var joke = await _context.Joke
-                .FirstOrDefaultAsync(m => m.ID == id);
+            Joke joke = joke_repository.GetById(id);
+
             if (joke == null)
             {
                 return NotFound();
@@ -192,17 +160,12 @@ namespace JokesWebApp.Controllers
         [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
-            var joke = await _context.Joke.FindAsync(id);
-            _context.Joke.Remove(joke);
-            await _context.SaveChangesAsync();
+            joke_repository.Delete(id);
+            joke_repository.Save();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool JokeExists(int id)
-        {
-            return _context.Joke.Any(e => e.ID == id);
-        }
     }
 }
