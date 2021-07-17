@@ -3,6 +3,7 @@ using JokesWebApp.Repositories;
 using JokesWebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace JokesWebApp.Controllers
@@ -68,7 +69,8 @@ namespace JokesWebApp.Controllers
         [Authorize]
         public IActionResult Create()
         {
-            return View();
+            JokeCreateViewModel createVM = new JokeCreateViewModel();
+            return View(createVM);
         }
 
         // POST: Jokes/Create
@@ -144,8 +146,22 @@ namespace JokesWebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                joke_repository.Update(joke);
-                await joke_repository.Save();
+                try
+                {
+                    joke_repository.Update(joke);
+                    await joke_repository.Save();
+                }
+                catch
+                {
+                    if (!JokeExists(joke.ID))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
                 return RedirectToAction(nameof(Index));
             }
 
@@ -181,6 +197,11 @@ namespace JokesWebApp.Controllers
             joke_repository.Delete(id);
             await joke_repository.Save();
             return RedirectToAction(nameof(Index));
+        }
+
+        private bool JokeExists(int id)
+        {
+            return joke_repository.GetById(id) != null;
         }
 
     }
