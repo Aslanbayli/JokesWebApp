@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace JokesWebApp.Repositories
 {
     public interface IGenericRepository<T> where T : class
     {
-        IEnumerable<T> GetAll();
-        T GetById(object id);
+        Task<IEnumerable<T>> GetAll();
+        Task<T> GetById(object id);
         void Insert(T obj);
         void Update(T obj);
         void Delete(object id);
-        void Save();
+        Task Save();
     }
 }

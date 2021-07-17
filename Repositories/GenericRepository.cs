@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace JokesWebApp.Repositories
 {
@@ -23,14 +24,14 @@ namespace JokesWebApp.Repositories
         }
 
         // Interface Implementations
-        public IEnumerable<T> GetAll()
+        public async Task<IEnumerable<T>> GetAll()
         {
-            return table.ToList();
+            return await table.ToListAsync();
         }
 
-        public T GetById(object id)
+        public async Task<T> GetById(object id)
         {
-            return table.Find(id);
+            return await table.FindAsync(id);
         }
 
         public void Insert(T obj)
@@ -50,9 +51,9 @@ namespace JokesWebApp.Repositories
             table.Remove(existing);
         }
 
-        public void Save()
+        public async Task Save()
         {
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

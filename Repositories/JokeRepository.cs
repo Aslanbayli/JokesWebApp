@@ -16,9 +16,9 @@ namespace JokesWebApp.Repositories
             
         }
 
-        public IEnumerable<Joke> ShowSearchFrom(string SearchPhrase)
+        public async Task<IEnumerable<Joke>> ShowSearchFrom(string SearchPhrase)
         {
-            return _context.Joke.Where(j => j.JokeQuestion.Contains(SearchPhrase)).ToList();
+            return await _context.Joke.Where(j => j.JokeQuestion.Contains(SearchPhrase)).ToListAsync();
         }
 
     }

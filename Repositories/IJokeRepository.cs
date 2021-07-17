@@ -1,10 +1,11 @@
 ﻿using JokesWebApp.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace JokesWebApp.Repositories
 {
     public interface IJokeRepository : IGenericRepository<Joke>
     {
-        IEnumerable<Joke> ShowSearchFrom(string SearchPhrase); 
+        Task<IEnumerable<Joke>> ShowSearchFrom(string SearchPhrase); 
     }
 }
