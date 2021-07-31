@@ -105,6 +105,7 @@ namespace JokesWebApp.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Joke");
+
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
