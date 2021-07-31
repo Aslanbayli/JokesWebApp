@@ -8,14 +8,8 @@ namespace JokesWebApp.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        public ApplicationDbContext _context;
+        public DbContext _context;
         public DbSet<T> table;
-
-        public GenericRepository()
-        {
-            this._context = new ApplicationDbContext();
-            table = _context.Set<T>();
-        }
 
         public GenericRepository(ApplicationDbContext _context)
         {

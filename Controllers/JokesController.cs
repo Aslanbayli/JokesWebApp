@@ -4,6 +4,7 @@ using JokesWebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace JokesWebApp.Controllers
@@ -69,8 +70,7 @@ namespace JokesWebApp.Controllers
         [Authorize]
         public IActionResult Create()
         {
-            JokeCreateViewModel createVM = new JokeCreateViewModel();
-            return View(createVM);
+            return View();
         }
 
         // POST: Jokes/Create
@@ -79,23 +79,25 @@ namespace JokesWebApp.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID, JokeQuestion, JokeAnswer")] Joke joke)
+        public async Task<IActionResult> Create(JokeCreateViewModel createVM)
         {
 
             if (ModelState.IsValid)
             {
+                var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                var joke = new Joke
+                {
+                    JokeQuestion = createVM.JokeQuestion,
+                    JokeAnswer = createVM.JokeAnswer,
+                    UserId = id
+                };
+
                 joke_repository.Insert(joke);
                 await joke_repository.Save();
+
                 return RedirectToAction(nameof(Index));
             }
-
-            JokeCreateViewModel createVM = new JokeCreateViewModel()
-            {
-                JokeQuestion = joke.JokeQuestion,
-                JokeAnswer = joke.JokeAnswer,
-                ID = joke.ID,
-                UserID = joke.UserId
-            };
 
 
             return View(createVM);
@@ -106,17 +108,18 @@ namespace JokesWebApp.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             Joke joke = await joke_repository.GetById(id);
 
-            if (id == null)
+            if (id == null || joke == null)
             {
                 return NotFound();
             }
 
-            if (joke == null)
+            if (joke.UserId != userId)
             {
-                return NotFound();
+                return RedirectToAction(nameof(HomeController.Error), "Home");
             }
 
             JokeEditViewModel editVM = new JokeEditViewModel()
@@ -137,35 +140,32 @@ namespace JokesWebApp.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID, JokeQuestion, JokeAnswer")] Joke joke)
+        public async Task<IActionResult> Edit(int id, JokeEditViewModel model)
         {
-            if (id != joke.ID)
+            if (id != model.ID)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
+                var joke = await joke_repository.GetById(model.ID);
+
+                if (joke is null)
                 {
-                    joke_repository.Update(joke);
-                    await joke_repository.Save();
+                    return NotFound();
                 }
-                catch
-                {
-                    if (!JokeExists(joke.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+
+                joke.JokeQuestion = model.JokeQuestion;
+                joke.JokeAnswer = model.JokeAnswer;
+
+                joke_repository.Update(joke);
+                await joke_repository.Save();
+
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(joke);
+            return View(model);
         }
 
 
@@ -197,11 +197,6 @@ namespace JokesWebApp.Controllers
             joke_repository.Delete(id);
             await joke_repository.Save();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool JokeExists(int id)
-        {
-            return joke_repository.GetById(id) != null;
         }
 
     }

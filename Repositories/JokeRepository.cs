@@ -13,13 +13,14 @@ namespace JokesWebApp.Repositories
 
         public JokeRepository(ApplicationDbContext context) : base(context)
         {
-            
+
         }
 
         public async Task<IEnumerable<Joke>> ShowSearchFrom(string SearchPhrase)
-        {
-            return await _context.Joke.Where(j => j.JokeQuestion.Contains(SearchPhrase)).ToListAsync();
+        {                               
+            return await ApplicationDbContext.Joke.Where(j => j.JokeQuestion.Contains(SearchPhrase)).ToListAsync();
         }
 
+        public ApplicationDbContext ApplicationDbContext => _context as ApplicationDbContext;
     }
 }
