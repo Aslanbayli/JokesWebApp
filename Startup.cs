@@ -29,6 +29,7 @@ namespace JokesWebApp
             // Add service for repos
             services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddTransient<IJokeRepository, JokeRepository>();
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)

@@ -11,18 +11,18 @@ namespace JokesWebApp.Controllers
 {
     public class JokesController : Controller
     {
-        private readonly IJokeRepository joke_repository;
 
-        public JokesController(IJokeRepository repository)
+        private readonly IUnitOfWork _unitOfWork;
+
+        public JokesController(IUnitOfWork unitOfWork)
         {
-            this.joke_repository = repository;
+            this._unitOfWork = unitOfWork;
         }
-
 
         // GET: Jokes
         public async Task<IActionResult> Index()
         {
-            var joke = joke_repository.GetAll();
+            var joke = _unitOfWork.Jokes.GetAll();
             return View(await joke);
         }
 
@@ -35,7 +35,7 @@ namespace JokesWebApp.Controllers
         // POST:  Jokes/ShowSearchResults
         public async Task<IActionResult> ShowSearchResults(string SearchPhrase)
         {
-            return View("Index", await joke_repository.ShowSearchFrom(SearchPhrase));
+            return View("Index", await _unitOfWork.Jokes.ShowSearchFrom(SearchPhrase));
         }
 
 
@@ -48,7 +48,7 @@ namespace JokesWebApp.Controllers
                 return NotFound();
             }
 
-            Joke joke = await joke_repository.GetById(id);
+            Joke joke = await _unitOfWork.Jokes.GetById(id);
 
             if (joke == null)
             {
@@ -93,8 +93,8 @@ namespace JokesWebApp.Controllers
                     UserId = id
                 };
 
-                joke_repository.Insert(joke);
-                await joke_repository.Save();
+                _unitOfWork.Jokes.Insert(joke);
+                await _unitOfWork.Complete();
 
                 return RedirectToAction(nameof(Index));
             }
@@ -110,7 +110,7 @@ namespace JokesWebApp.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            Joke joke = await joke_repository.GetById(id);
+            Joke joke = await _unitOfWork.Jokes.GetById(id);
 
             if (id == null || joke == null)
             {
@@ -149,7 +149,7 @@ namespace JokesWebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                var joke = await joke_repository.GetById(model.ID);
+                var joke = await _unitOfWork.Jokes.GetById(model.ID);
 
                 if (joke is null)
                 {
@@ -159,8 +159,8 @@ namespace JokesWebApp.Controllers
                 joke.JokeQuestion = model.JokeQuestion;
                 joke.JokeAnswer = model.JokeAnswer;
 
-                joke_repository.Update(joke);
-                await joke_repository.Save();
+                _unitOfWork.Jokes.Update(joke);
+                await _unitOfWork.Complete();
 
                 return RedirectToAction(nameof(Index));
             }
@@ -178,7 +178,7 @@ namespace JokesWebApp.Controllers
                 return NotFound();
             }
 
-            Joke joke = await joke_repository.GetById(id);
+            Joke joke = await _unitOfWork.Jokes.GetById(id);
 
             if (joke == null)
             {
@@ -194,8 +194,8 @@ namespace JokesWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            joke_repository.Delete(id);
-            await joke_repository.Save();
+            _unitOfWork.Jokes.Delete(id);
+            await _unitOfWork.Complete();
             return RedirectToAction(nameof(Index));
         }
 

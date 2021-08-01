@@ -45,9 +45,5 @@ namespace JokesWebApp.Repositories
             table.Remove(existing);
         }
 
-        public async Task Save()
-        {
-            await _context.SaveChangesAsync();
-        }
     }
 }

@@ -10,6 +10,5 @@ namespace JokesWebApp.Repositories
         void Insert(T obj);
         void Update(T obj);
         void Delete(object id);
-        Task Save();
     }
 }
