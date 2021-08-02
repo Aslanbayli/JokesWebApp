@@ -1,4 +1,5 @@
-﻿using JokesWebApp.Models;
+﻿using AutoMapper;
+using JokesWebApp.Models;
 using JokesWebApp.Repositories;
 using JokesWebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -14,9 +15,12 @@ namespace JokesWebApp.Controllers
 
         private readonly IUnitOfWork _unitOfWork;
 
-        public JokesController(IUnitOfWork unitOfWork)
+        private readonly IMapper _mapper;
+
+        public JokesController(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            this._unitOfWork = unitOfWork;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         // GET: Jokes
@@ -55,12 +59,7 @@ namespace JokesWebApp.Controllers
                 return NotFound();
             }
 
-            JokeDetailsViewModel detailsVM = new JokeDetailsViewModel()
-            {
-                JokeQuestion = joke.JokeQuestion,
-                JokeAnswer = joke.JokeAnswer,
-                ID = joke.ID
-            };
+            var detailsVM = _mapper.Map<JokeDetailsViewModel>(joke);
 
             return View(detailsVM);
         }
@@ -93,6 +92,7 @@ namespace JokesWebApp.Controllers
                     UserId = id
                 };
 
+
                 _unitOfWork.Jokes.Insert(joke);
                 await _unitOfWork.Complete();
 
@@ -122,13 +122,8 @@ namespace JokesWebApp.Controllers
                 return RedirectToAction(nameof(HomeController.Error), "Home");
             }
 
-            JokeEditViewModel editVM = new JokeEditViewModel()
-            {
-                JokeQuestion = joke.JokeQuestion,
-                JokeAnswer = joke.JokeAnswer,
-                ID = joke.ID,
-                UserID = joke.UserId
-            };
+
+            JokeEditViewModel editVM = _mapper.Map<JokeEditViewModel>(joke);
 
             return View(editVM);
 

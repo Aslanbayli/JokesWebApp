@@ -169,3 +169,5 @@ C:\Users\ASUS\Desktop\c#\JokesWebApp\obj\Debug\netcoreapp3.1\JokesWebApp.dll
 C:\Users\ASUS\Desktop\c#\JokesWebApp\obj\Debug\netcoreapp3.1\JokesWebApp.pdb
 C:\Users\ASUS\Desktop\c#\JokesWebApp\obj\Debug\netcoreapp3.1\JokesWebApp.genruntimeconfig.cache
 C:\Users\ASUS\Desktop\c#\JokesWebApp\obj\Debug\netcoreapp3.1\JokesWebApp.csprojAssemblyReference.cache
+C:\Users\ASUS\Desktop\c#\JokesWebApp\bin\Debug\netcoreapp3.1\AutoMapper.dll
+C:\Users\ASUS\Desktop\c#\JokesWebApp\bin\Debug\netcoreapp3.1\AutoMapper.Extensions.Microsoft.DependencyInjection.dll

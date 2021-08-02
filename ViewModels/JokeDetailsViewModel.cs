@@ -8,7 +8,9 @@ namespace JokesWebApp.ViewModels
     public class JokeDetailsViewModel
     {
         public int ID { get; set; }
+
         public string JokeQuestion { get; set; }
+
         public string JokeAnswer { get; set; }
     }
 }
