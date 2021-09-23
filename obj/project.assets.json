@@ -8910,26 +8910,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\ASUS\\.nuget\\packages\\": {}
+    "/home/aslanbayli/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ASUS\\Desktop\\c#\\JokesWebApp\\JokesWebApp.csproj",
+      "projectUniqueName": "/mnt/c/Users/ASUS/Desktop/Projects/C#/JokesWebApp/JokesWebApp.csproj",
       "projectName": "JokesWebApp",
-      "projectPath": "C:\\Users\\ASUS\\Desktop\\c#\\JokesWebApp\\JokesWebApp.csproj",
-      "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\ASUS\\Desktop\\c#\\JokesWebApp\\obj\\",
+      "projectPath": "/mnt/c/Users/ASUS/Desktop/Projects/C#/JokesWebApp/JokesWebApp.csproj",
+      "packagesPath": "/home/aslanbayli/.nuget/packages/",
+      "outputPath": "/mnt/c/Users/ASUS/Desktop/Projects/C#/JokesWebApp/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\ASUS\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/home/aslanbayli/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp3.1"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -8997,7 +8995,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.203\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/5.0.400/RuntimeIdentifierGraph.json"
       }
     }
   }
